@@ -1,6 +1,8 @@
 package com.play.concurrent;
 
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -98,22 +100,23 @@ public class ReentrantLockSample {
         AtomicInteger count = new AtomicInteger();
         long start = System.currentTimeMillis();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             final Integer index = i;
             new Thread(() -> {
                 try {
-                    if (count.getAndIncrement() % 2 == 0) {
-//                        transferMoney(accountA, accountB, 100, 10, TimeUnit.SECONDS);
-                        transferMoney(accountA, accountB, 100);
+                    if (index % 2 == 0) {
+                        transferMoney(accountA, accountB, 100, 10, TimeUnit.SECONDS);
+//                        transferMoney(accountA, accountB, 100);
                     } else {
-//                        transferMoney(accountB, accountA, 100, 10, TimeUnit.SECONDS);
-                        transferMoney(accountB, accountA, 100);
+                        transferMoney(accountB, accountA, 100, 10, TimeUnit.SECONDS);
+//                        transferMoney(accountB, accountA, 100);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
             }).start();
+//            new CompletableFuture().whenComplete()
         }
         while (Thread.activeCount() > 1) {
             try {
