@@ -1,11 +1,15 @@
 package com.play.concurrent;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-public class BoundedBufferTest extends TestCase {
+/**
+ * https://www.vogella.com/tutorials/Hamcrest/article.html
+ *
+ */
+public class BoundedBufferTest  {
 
     @Test
     public void isEmpty() {
@@ -16,7 +20,7 @@ public class BoundedBufferTest extends TestCase {
 
 
     @Test
-    public void testTakeBlocksWhenEmpty() {
+    public void takeBlocksWhenEmpty() {
         final BoundedBuffer<String> buffer = new BoundedBuffer<>(10);
         Thread taker = new Thread(() -> {
             try {
@@ -24,16 +28,20 @@ public class BoundedBufferTest extends TestCase {
                 fail();
             } catch (InterruptedException e) {
 //                e.printStackTrace();
+                System.out.println("taker interrupted");
             }
         });
         try{
             taker.start();
             Thread.sleep(1000);
             taker.interrupt();
-            taker.join(2000);
-            assertFalse(taker.isAlive());
+            taker.join(100);
+            assertThat(taker.isAlive(),is(false));
         }catch (Exception e){
             fail();
         }
+        System.out.println("main finished");
     }
+
+
 }
