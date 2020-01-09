@@ -51,7 +51,7 @@ public class BoundedBufferTest {
     public void shouldGetRightValue() {
         PutTakeTest test = new PutTakeTest(10, 10, 100_000);
         test.test();
-        test.shutdown();
+//        test.shutdown();
 
     }
 
@@ -86,12 +86,19 @@ class PutTakeTest {
             barrier.await();//等待所有的线程就绪
             barrier.await(); //等待所有的线程执行完成
             assertThat(putSum.get(), is(takeSum.get()));
+            System.out.println("main finished: sum is "+putSum.get());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
+    /**
+     * 生成伪随机数
+     *
+     * @param y
+     * @return
+     */
     static int xorShift(int y) {
         y ^= (y << 6);
         y ^= (y >>> 21);
@@ -107,12 +114,14 @@ class PutTakeTest {
                 int seed = (int) (this.hashCode() ^ System.nanoTime());
                 int sum = 0;
                 barrier.await();
+                long start = System.currentTimeMillis();
                 for (int i = nTrials; i > 0; --i) {
                     bb.put(seed);
                     sum += seed;
                     seed = xorShift(seed);
                 }
                 putSum.getAndAdd(sum);
+                System.out.println(String.format("%s take time: %s ms", Thread.currentThread(), System.currentTimeMillis() - start));
                 barrier.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);
