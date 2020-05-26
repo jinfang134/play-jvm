@@ -13,6 +13,8 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * jvm 字节码增强
@@ -31,13 +33,17 @@ public class TestAgent {
         } catch (Exception e) {
             System.out.println("agent load failed!");
         }
+        Arrays.asList("I","love", "you")
+                .stream()
+                .map(String::toUpperCase)
+                .collect(Collectors.joining(","));
     }
 
 }
 
 class Attacher {
     public static void main(String[] args) throws IOException, AgentLoadException, AgentInitializationException, AttachNotSupportedException {
-        String pid = "7822";
+        String pid = "9182";
         VirtualMachine vm = VirtualMachine.attach(pid);
         vm.loadAgent("/home/zuo_ji/source-code/play-jvm/build/libs/play-jvm-1.0-SNAPSHOT.jar");
     }
